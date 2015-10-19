@@ -1,25 +1,83 @@
 /**
- * Created by aj on 10/10/15.
+ * CSCI 333 Homework 6-- Hashing.
+ * Created by Andrew Petriccione on 10/10/15.
+ * The point of this homework is to implement Hash Tables
+ * <p/>
+ * The ChainedHashTable class is based on a hash table with chaining using the multiplication method
+ * from the slides and book. It uses an array of LinkedList<Integer> objects as its primary
+ * instance variable/data field
  */
+
+import java.util.LinkedList;
+
 public class ChainedHashTable {
+    private LinkedList<Integer>[] theList;
+    private int m;
+    private static final double A = 0.618;
 
     /**
-     * 24 points: Implement a Java class named ChainedHashTable, based on a hash table with chaining using the
-     * multiplication method from the slides/textbook. Your should use an array of LinkedList<Integer> objects
-     * as your primary instance variable / data field.
-     The constructor should have a parameter for n, the total number of inputs expected. In the constructor,
-     create the array of size m as the first power of 2 larger than n, full of constructed but empty linked lists
-     at each index. You may choose A directly, or use the integer fraction method.
-     There should also be public methods for insert, delete, and search as in the slides/textbook.
-     I also want a public printTable method, which runs a loop and prints each linked list in the hash table;
-     consider using the LinkedList class toString method.
-     You will need a private helper method named hash. Given an int key, it computes and returns an int index
-     of the table.
-
-     5 points extra credit: Use a Universal collection of hash functions instead of the multiplication method,
-     for the ChainedHashTable class above. The random constants a and b, and the prime number p > m should be chosen
-     in the constructor.
+     * This constructor method creates a chained hash table and initializes each index with a new linked list.
+     * @param n The size of the chained hash table to be created.
      */
-    public ChainedHashTable() {
+    public ChainedHashTable(int n) {
+        m = 1;
+        while (m <= n) {
+            m *= 2;
+        }
+
+        theList = new LinkedList[m];
+        for (int i = 0; i < theList.length; i++) {
+            theList[i] = new LinkedList();
+        }
+    }
+
+    /**
+     *  Insert the value into the hash table.
+     * @param n the integer to add to the Chained hash table
+     */
+    public void insert(Integer n) {
+        theList[hash(n)].addFirst(n);
+    }
+
+    /**
+     *  Delete removes the element n from the hash table.
+     * @param n The element to be removed
+     */
+    public void delete(Integer n) {
+        theList[hash(n)].removeFirstOccurrence(n);
+    }
+
+    /**
+     * the Search method determines whether a key is in the hash table
+     * @param k the key to search for
+     * @return the index where the key is located in the hash table, or else NULL
+     */
+    public Integer search(int k) {
+        int target = hash(k);
+        Integer index = theList[target].indexOf(k);
+        if (index < 0) return null;
+        else return theList[target].get(index);
+    }
+
+    /**
+     * The print table method prints the contents of the hash table.
+     * @return The String that can be printed
+     */
+    public String printTable() {
+        String result = "";
+        for (int i = 0; i < theList.length; i++) {
+            result += theList[i];
+        }
+        return result;
+    }
+
+    /**
+     * The hash method chooses the index to insert a key into the hash table.
+     * @param key  The integer to be inserted.
+     * @return The index where the key will be added to the hash table.
+     */
+    private int hash(int key) {
+        double hashValue = m * (key * A % 1);
+        return (int) hashValue;
     }
 }
